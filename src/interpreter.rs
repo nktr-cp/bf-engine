@@ -35,7 +35,7 @@ impl Interpreter {
     }
 
     fn consume(&mut self, c: char) -> bool {
-				if self.equal(c) {
+        if self.equal(c) {
             self.instruction_pointer += 1;
             return true;
         }
@@ -46,40 +46,40 @@ impl Interpreter {
         self.instructions[self.instruction_pointer] == c
     }
 
-		pub fn gen(&mut self) -> String {
-			let mut code = String::from(
+    pub fn gen(&mut self) -> String {
+        let mut code = String::from(
 				"#include <stdio.h>\n\nint main() {\n\tunsigned char memory[30000] = {0};\n\tunsigned char *ptr = memory;\n\n"
 			);
 
-			let mut indent = 1;
-			for c in self.instructions.iter() {
-				let mut spaces = String::new();
-				for _ in 0..indent {
-					spaces.push_str("\t");
-				}
-				match c {
-					'>' => code.push_str(&format!("{}++ptr;\n", spaces)),
-					'<' => code.push_str(&format!("{}--ptr;\n", spaces)),
-					'+' => code.push_str(&format!("{}++*ptr;\n", spaces)),
-					'-' => code.push_str(&format!("{}--*ptr;\n", spaces)),
-					'.' => code.push_str(&format!("{}putchar(*ptr);\n", spaces)),
-					',' => code.push_str(&format!("{}*ptr = getchar();\n", spaces)),
-					'[' => {
-						code.push_str(&format!("{}while (*ptr) {{\n", spaces));
-						indent += 1;
-					}
-					']' => {
-						indent -= 1;
-						spaces.pop();
-						code.push_str(&format!("{}}}\n", spaces));
-					}
-					_ => {}
-				}
-			}
+        let mut indent = 1;
+        for c in self.instructions.iter() {
+            let mut spaces = String::new();
+            for _ in 0..indent {
+                spaces.push_str("\t");
+            }
+            match c {
+                '>' => code.push_str(&format!("{}++ptr;\n", spaces)),
+                '<' => code.push_str(&format!("{}--ptr;\n", spaces)),
+                '+' => code.push_str(&format!("{}++*ptr;\n", spaces)),
+                '-' => code.push_str(&format!("{}--*ptr;\n", spaces)),
+                '.' => code.push_str(&format!("{}putchar(*ptr);\n", spaces)),
+                ',' => code.push_str(&format!("{}*ptr = getchar();\n", spaces)),
+                '[' => {
+                    code.push_str(&format!("{}while (*ptr) {{\n", spaces));
+                    indent += 1;
+                }
+                ']' => {
+                    indent -= 1;
+                    spaces.pop();
+                    code.push_str(&format!("{}}}\n", spaces));
+                }
+                _ => {}
+            }
+        }
 
-			code.push_str("\treturn 0;\n}");
-			code
-		}
+        code.push_str("\treturn 0;\n}");
+        code
+    }
 
     pub fn run(&mut self) {
         while self.instruction_pointer < self.instructions.len() {
