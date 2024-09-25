@@ -1,21 +1,26 @@
 mod interpreter;
 
-use std::env;
-
+use clap::Parser;
 use crate::interpreter::Interpreter;
 
-fn main() {
-    let args: Vec<String> = env::args().collect();
-    let filename;
-    if args.len() == 1 {
-        filename = "test/hello.bf";
-    } else if args.len() == 2 {
-        filename = &args[1];
-    } else {
-        eprintln!("Usage: {} <filename>", args[0]);
-        std::process::exit(1);
-    }
+#[derive(Parser)]
+struct Cli {
+	filename: Option<String>,
 
-    let mut interpreter = Interpreter::new(filename);
-    interpreter.run();
+	#[arg(long)]
+	gen: bool,
+}
+
+fn main() {
+    let args = Cli::parse();
+
+		let filename = args.filename.as_deref().unwrap_or("test/hello.bf");
+
+		let mut interpreter = Interpreter::new(filename);
+
+		if args.gen {
+			println!("{}", interpreter.gen());
+		} else {
+			interpreter.run();
+		}
 }
